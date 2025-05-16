@@ -2,11 +2,17 @@ from typing import List
 from pydantic import BaseModel
 
 class VariantUpload(BaseModel):
-    objectName:str
-    bucketName:str
-    mimeType:str
+    object_name:str
+    bucket_name:str
+    mime_type:str
 
-class UploadResponse(BaseModel):
+class ImageUploadResponse(BaseModel):
     tags:List[str]|None=None
     text: str|None=None
     files:List[VariantUpload]
+
+class VideoUploadResponse(BaseModel):
+    object_name:str
+    bucket_name:str
+    mime_type:str
+    tags:List[str]|None=None

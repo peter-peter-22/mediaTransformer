@@ -6,7 +6,6 @@ from src.routes.home import router as home_router
 from src.routes.upload_image import router as upload_image_router
 from src.routes.upload_video import router as upload_video_router
 
-
 # Create app
 app = FastAPI()
 

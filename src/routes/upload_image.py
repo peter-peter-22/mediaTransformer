@@ -3,9 +3,9 @@ from src.minio.client import minio_client
 from PIL import Image
 import io
 from pydantic import ValidationError
-from src.options.parse_options import ImageOptions, ImageVariant
+from src.options.image_options import ImageOptions, ImageVariant
 from src.tagging.tag_image import tag_image
-from src.common.response import UploadResponse, VariantUpload
+from src.common.response import ImageUploadResponse, VariantUpload
 import asyncio
 from src.ocr.find_text import extract_text
 from src.common.format_pydantic_error import handle_pydantic_error
@@ -73,7 +73,7 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
         ])
 
         # Return results
-        return UploadResponse.model_construct(
+        return ImageUploadResponse.model_construct(
             tags=tags,
             text=text,
             files=responses
@@ -83,6 +83,7 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
         handle_pydantic_error(e)
     except Exception as e:
         # Handle other exceptions
+        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 async def upload_variant(parsed_options: ImageOptions,variant:ImageVariant, image: Image.Image):
@@ -95,11 +96,11 @@ async def upload_variant(parsed_options: ImageOptions,variant:ImageVariant, imag
     """
 
     # Overwrite default parameters with the variant's values
-    convertTo = variant.convert_to or parsed_options.convertTo
+    convert_to = variant.convert_to or parsed_options.convertTo
     limit_resolution = variant.limit_resolution or parsed_options.limit_resolution
-    uploadMimeType = variant.upload_mime_type or parsed_options.upload_mime_type
+    upload_mime_type = variant.upload_mime_type or parsed_options.upload_mime_type
     quality = variant.quality or parsed_options.quality
-    bucketName = variant.bucket_name or parsed_options.bucket_name 
+    bucket_name = variant.bucket_name or parsed_options.bucket_name 
 
     # Limit max resolution if necessary
     if limit_resolution:
@@ -109,7 +110,7 @@ async def upload_variant(parsed_options: ImageOptions,variant:ImageVariant, imag
     buffer = io.BytesIO()
     image.save(
         buffer, 
-        format=convertTo or image.format, 
+        format=convert_to or image.format, 
         quality=quality or 100
     )
     buffer.seek(0)
@@ -117,17 +118,17 @@ async def upload_variant(parsed_options: ImageOptions,variant:ImageVariant, imag
     # Upload
     await asyncio.to_thread(
         lambda: minio_client.put_object(
-            bucketName,
+            bucket_name,
             variant.object_name,
             data=buffer,
             length=buffer.getbuffer().nbytes,
-            content_type=uploadMimeType
+            content_type=upload_mime_type
         )
     )
 
     # Return file metadata
     return VariantUpload.model_construct(
-        objectName=variant.object_name,
-        bucketName=bucketName, 
-        mimeType=uploadMimeType
+        object_name=variant.object_name,
+        bucket_name=bucket_name, 
+        mime_type=upload_mime_type
     )

@@ -20,9 +20,10 @@ from pytorchvideo.data.video import Video
 from typing import List
 from src.common.lerp import lerp, inverse_lerp
 import math
+from pathlib import Path
 
 # Get class names and their ids
-json_filename = "kinetics_classnames.json"
+json_filename = Path(__file__).parent / Path('kinetics_classnames.json')
 with open(json_filename, "r") as f:
     kinetics_classnames:Dict[str,int] = json.load(f)
 
@@ -30,7 +31,6 @@ with open(json_filename, "r") as f:
 kinetics_id_to_classname:Dict[int,str] = {}
 for k, v in kinetics_classnames.items():
     kinetics_id_to_classname[v] = str(k).replace('"', "") # Remove " symbols
-
 
 # Load model and preprocessing
 model = slow_r50(pretrained=True).to(device)
@@ -57,10 +57,9 @@ transform = ApplyTransformToKey(
     ])
 )
 
-def tag_video(top_k:int, min_confidence:float):
+def tag_video(video_path:str, top_k:int, min_confidence:float):
 
     # Load video
-    video_path = 'mountains.mp4'
     video = EncodedVideo.from_path(video_path)
     video:Video
     
@@ -102,6 +101,7 @@ def tag_video(top_k:int, min_confidence:float):
             pred_class_names = [(kinetics_id_to_classname[int(i)],round(prob,3)) for prob,i in results]
             print(f"Clip {start_time:.1f}-{end_time:.1f}s: {pred_class_names}")
 
+            # Add the tags above the confidence threshold to the list
             all_tags.extend([name for name,prob in pred_class_names if prob>min_confidence])
 
         except Exception as e:

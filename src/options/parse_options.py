@@ -1,0 +1,34 @@
+from pydantic import BaseModel,ConfigDict
+from typing import Literal, List
+
+type ImageFormat=Literal["WEBP","JPEG"]
+
+class Vector2Int(BaseModel):
+    x:int
+    y:int
+
+class ImageVariant(BaseModel):
+    object_name: str
+    bucket_name: str|None=None
+    convert_to: ImageFormat|None=None
+    quality: int|None=None
+    limit_resolution: Vector2Int|None=None
+    max_size: int|None=None
+    upload_mime_type:str|None=None
+
+class ImageOptions(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    bucket_name: str
+    object_name: str
+    mime_type: str|None=None
+    upload_mime_type:str
+    convertTo: ImageFormat|None=None
+    quality: int|None=None
+    limit_resolution: Vector2Int|None=None
+    max_size: int|None=None
+    tag:bool|None=False
+    rgb_only: bool|None=True
+    variants: List[ImageVariant]=[]
+
+    

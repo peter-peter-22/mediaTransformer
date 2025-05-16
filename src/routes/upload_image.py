@@ -8,6 +8,7 @@ from src.tagging.tag_image import tag_image
 from src.common.response import UploadResponse, VariantUpload
 import asyncio
 from src.ocr.find_text import extract_text
+from src.common.format_pydantic_error import handle_pydantic_error
 
 router = APIRouter()
 
@@ -22,23 +23,23 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
         mime_type=file.content_type
         print("Mime Type: ",mime_type)
         if mime_type is None:
-            raise HTTPException(status_code=400, detail="Mime type is required")
+            raise HTTPException(status_code=422, detail="Mime type is required")
 
         # Get the file size
         size=file.size
         print("Size: ",size)
         if size is None:
-            raise HTTPException(status_code=400, detail="File size is required")
+            raise HTTPException(status_code=422, detail="File size is required")
 
         # Validate the mimetype when necessary
         if parsed_options.mime_type:
             if parsed_options.mime_type != mime_type:
-                raise HTTPException(status_code=400, detail=f"Mime type mismatch. Expected {parsed_options.mime_type}, got {mime_type}")
+                raise HTTPException(status_code=422, detail=f"Mime type mismatch. Expected {parsed_options.mime_type}, got {mime_type}")
         
         # Validate the file size when necessary
         if parsed_options.max_size:
             if size > parsed_options.max_size:
-                raise HTTPException(status_code=400, detail=f"File size exceeds maximum allowed. Maximum size: {parsed_options.max_size} bytes, got: {size} bytes")
+                raise HTTPException(status_code=422, detail=f"File size exceeds maximum allowed. Maximum size: {parsed_options.max_size} bytes, got: {size} bytes")
     
         # Read uploaded file
         contents = await file.read()
@@ -79,14 +80,7 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
         )
 
     except ValidationError as e:
-        # Handle validation errors
-        errors=e.errors(include_context=False,include_url=False,include_input=False)
-        messages=[
-            f"-Field: {error.get("loc")[0]}, Error:{error.get("msg")}"
-            if len(error.get("loc"))>0 else
-            f"Error:{error.get("msg")}"
-            for error in errors]
-        raise HTTPException(status_code=422, detail=str(messages))
+        handle_pydantic_error(e)
     except Exception as e:
         # Handle other exceptions
         raise HTTPException(status_code=400, detail=str(e))

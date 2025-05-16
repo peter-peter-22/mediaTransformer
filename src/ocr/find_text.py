@@ -3,6 +3,7 @@ from PIL import Image
 import doctr.models as models
 import numpy as np
 from typing import List
+import torch
 
 model = models.ocr_predictor(
     det_arch="db_resnet50",
@@ -22,7 +23,8 @@ def extract_text(image:Image.Image,min_confidence:float)->str:
     # Prepare the image for the mode
     img_array=np.asarray(image)
     # Predict
-    results=model([img_array])
+    with torch.no_grad():
+        results=model([img_array])
     # Convert the json result to one string
     lines = []
     for page in results.pages:

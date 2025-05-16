@@ -1,7 +1,11 @@
 from fastapi import FastAPI
-from src.routes.upload_image import router as upload_router
-from src.routes.home import router as home_router
 from fastapi.middleware.cors import CORSMiddleware
+
+# Routes
+from src.routes.home import router as home_router
+from src.routes.upload_image import router as upload_image_router
+from src.routes.upload_video import router as upload_video_router
+
 
 # Create app
 app = FastAPI()
@@ -17,4 +21,5 @@ app.add_middleware(
 
 # Routes
 app.include_router(home_router)
-app.include_router(upload_router,prefix="/upload")
+app.include_router(upload_image_router,prefix="/upload_image")
+app.include_router(upload_video_router,prefix="/upload_video")

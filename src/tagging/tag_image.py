@@ -2,6 +2,7 @@ from PIL import Image
 import torch
 from torchvision import models
 from typing import NamedTuple
+from src.common.device import device
 
 # Type for the tags
 class Tag(NamedTuple):
@@ -14,10 +15,6 @@ class Tag(NamedTuple):
     category: str
     probability: float
 
-# Get device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Device: {device}")
-
 # Load the pre-trained ResNet50 model with IMAGENET1K_V2 weights
 model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2).to(device)
 model.eval()
@@ -25,7 +22,7 @@ model.eval()
 # Define the preprocessing pipeline
 preprocess = models.ResNet50_Weights.IMAGENET1K_V2.transforms()
 
-async def tag_image(image: Image.Image, top_k: int = 5, min_confidence: float = 0.2):
+async def tag_image(image: Image.Image, top_k: int, min_confidence: float):
     """
     Predict the image's category using a pre-trained ResNet model.
     Args:
@@ -33,9 +30,6 @@ async def tag_image(image: Image.Image, top_k: int = 5, min_confidence: float = 
     Returns:
         dict: A dictionary containing the predicted category and its probability.
     """
-    # Convert to RGB if necessary
-    if image.mode != "RGB":
-        image = image.convert("RGB")
 
     # Preprocess the image
     input_tensor = preprocess(image).unsqueeze(0).to(device)

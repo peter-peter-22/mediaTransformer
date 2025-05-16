@@ -7,6 +7,7 @@ from src.options.parse_options import ImageOptions, ImageVariant
 from src.tagging.tag_image import tag_image
 from src.common.response import UploadResponse, VariantUpload
 import asyncio
+from src.ocr.find_text import extract_text
 
 router = APIRouter()
 
@@ -41,16 +42,20 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
     
         # Read uploaded file
         contents = await file.read()
-        image = Image.open(io.BytesIO(contents))
+        bytes=io.BytesIO(contents)
+        image = Image.open(bytes)
 
         # Convert to RGB if necessary
-        if parsed_options.rgb_only and image.mode != "RGB":
+        if image.mode != "RGB":
             image = image.convert("RGB")
+
+        # Read text if necessary
+        text=extract_text(image,parsed_options.ocr_min_confidence) if parsed_options.ocr else None
         
         # Tag image if necessary
         tags=None
         if parsed_options.tag:
-            tags=[tag.category for tag in await tag_image(image,5,0.2)]
+            tags=[tag.category for tag in await tag_image(image,parsed_options.tagging_top_k,parsed_options.tagging_min_confidence)]
         
         # Create a variant for the default entry
         parsed_options.variants.insert(
@@ -69,6 +74,7 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
         # Return results
         return UploadResponse.model_construct(
             tags=tags,
+            text=text,
             files=responses
         )
 
@@ -110,7 +116,7 @@ async def upload_variant(parsed_options: ImageOptions,variant:ImageVariant, imag
     image.save(
         buffer, 
         format=convertTo or image.format, 
-        quality=quality
+        quality=quality or 100
     )
     buffer.seek(0)
     

@@ -7,5 +7,6 @@ class VariantUpload(BaseModel):
     mimeType:str
 
 class UploadResponse(BaseModel):
-    tags:List[str]|None = None
+    tags:List[str]|None=None
+    text: str|None=None
     files:List[VariantUpload]

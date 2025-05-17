@@ -1,48 +1,19 @@
 from src.common.device import device
 from PIL import Image
-import doctr.models as models
 import numpy as np
 from typing import List
-import torch
+from transformers.pipelines import pipeline
+from transformers.models.auto.processing_auto import AutoProcessor
+from transformers.models.blip import BlipForConditionalGeneration
 
-model = models.ocr_predictor(
-    det_arch="db_resnet50",
-    reco_arch = 'crnn_vgg16_bn',
-    pretrained=True
-).to(device)
+processor = AutoProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 
-def extract_text(image:Image.Image,min_confidence:float)->str:
-    """
-    Read the texts from the image, preserve the lines, filter out inconfident results.
-    Args:
-        image (PIL.Image): The input image
-        min_confidence (float): Filter out line below this confidence level.
-    Returns:
-        str: The predicted text with linebraks.
-    """
-    # Prepare the image for the mode
-    img_array=np.asarray(image)
-    # Predict
-    with torch.no_grad():
-        results=model([img_array])
-    # Convert the json result to one string
-    lines = []
-    for page in results.pages:
-        for block in page.blocks:
-            for line in block.lines:
-                # Preserve the lines
-                words_in_line:List[str]=[]
-                too_inconfident=False
-                for word in line.words:
-                    if word.confidence < min_confidence:
-                        # If one word is too inconfident, skip the whole line
-                        too_inconfident=True
-                        break 
-                    words_in_line.append(word.value)
-                if too_inconfident:
-                    continue
-                # Add a space between each word
-                lines.append(' '.join(words_in_line))
-    # Add line breaks between lines
-    return '\n'.join(lines)
-                
+def test(image: Image.Image, text:str):
+    
+    inputs = processor(images=image, text=text, return_tensors="pt")
+
+    generated_ids = model.generate(**inputs)
+
+    generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+    print(generated_text)

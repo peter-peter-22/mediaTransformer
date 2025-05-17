@@ -24,9 +24,8 @@ class ImageOptions(BaseModel):
     quality: int|None=None
     limit_resolution: Vector2Int|None=None
     max_size: int|None=None
-    tag:bool=False
-    tagging_min_confidence:float=0.2
-    tagging_top_k:int=5
+    describe:bool=False
+    description_start: str|None=None
     variants: List[ImageVariant]=[]
     ocr: bool=False
     ocr_min_confidence: float=0.8

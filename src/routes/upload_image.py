@@ -4,7 +4,7 @@ from PIL import Image
 import io
 from pydantic import ValidationError
 from src.options.image_options import ImageOptions, ImageVariant
-from src.tagging.tag_image import classify_image
+from src.tagging.tag_image import describe_image
 from src.common.response import ImageUploadResponse, VariantUpload
 import asyncio
 from src.common.format_pydantic_error import handle_pydantic_error
@@ -52,14 +52,11 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
 
         # Read text if necessary
         #text=extract_text(image) if parsed_options.ocr else None
-        text=None
-        test(image,"A picture of")
-        return
 
         # Tag image if necessary
         label=None
-        if parsed_options.tag:
-            label=classify_image(image)
+        if parsed_options.describe:
+            label=describe_image(image,parsed_options.description_start)
         
         # Create a variant for the default entry
         parsed_options.variants.insert(
@@ -68,7 +65,7 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
                 object_name=parsed_options.object_name,
             )
         )
-
+        return
         # Process the variants
         responses=await asyncio.gather(*[
             upload_variant(parsed_options, variant, image)
@@ -78,7 +75,7 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
         # Return results
         return ImageUploadResponse.model_construct(
             label=label,
-            text=text,
+            text=None,
             files=responses
         )
 

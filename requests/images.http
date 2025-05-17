@@ -13,7 +13,8 @@ Content-Disposition: form-data; name="options"
     "upload_mime_type":"image/webp",
     "quality":80,
     "limit_resolution":{"x":1920,"y":1080},
-    "tag":true,
+    "describe":true,
+    "description_start":"A picture of",
     "variants":[{
         "object_name":"test/name-lite.webp",
         "limit_resolution":{"x":1280,"y":720}
@@ -60,7 +61,7 @@ Content-Disposition: form-data; name="options"
     "object_name":"test/text.webp",
     "upload_mime_type":"image/webp",
     "ocr":true,
-    "tag":true
+    "describe":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -81,7 +82,7 @@ Content-Disposition: form-data; name="options"
     "bucket_name":"public",
     "object_name":"test/text.jpg",
     "upload_mime_type":"image/jpg",
-    "tag":true
+    "describe":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW

@@ -1,40 +1,20 @@
-from PIL import Image
-import torch
-from typing import NamedTuple
 from src.common.device import device
-from transformers.models.vit import ViTImageProcessor, ViTForImageClassification
+from PIL import Image
+from transformers.models.auto.processing_auto import AutoProcessor
+from transformers.models.blip import BlipForConditionalGeneration
 
-# Type for the tags
-class Tag(NamedTuple):
-    """
-    Tag paired with accuracy.
-    Attributes:
-        category (str): The predicted category of the image.
-        probability (float): The confidence score for the predicted category.
-    """
-    category: str
-    probability: float
-
-# Get the model and the preprocessor
-processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
-model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
-model.to(device) # type: ignore
+processor = AutoProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 model.eval()
+model.to(device)  # type: ignore
 
-def classify_image(image: Image.Image):
-    # Preprocess the image
-    inputs = processor(image,return_tensors="pt").to(device)
+def describe_image(image: Image.Image, text:str|None):
+    # Preprocess inputs
+    inputs = processor(images=image, text=text, return_tensors="pt").to(device)
 
-    # Perform inference
-    with torch.no_grad():
-        outputs = model(**inputs)
-        logits = outputs.logits
+    # Inference
+    generated_ids = model.generate(**inputs)
 
-    # Make the label readable
-    predicted_class_idx = logits.argmax(-1).item()
-    label=model.config.id2label[predicted_class_idx]
-    print("Predicted class:", label)
-
-    # Return the result
-    if(isinstance(label, str)):
-        return label
+    # Decode the output
+    generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+    return str(generated_text)

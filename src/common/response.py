@@ -7,7 +7,7 @@ class VariantUpload(BaseModel):
     mime_type:str
 
 class ImageUploadResponse(BaseModel):
-    tags:List[str]|None=None
+    label:str|None=None
     text: str|None=None
     files:List[VariantUpload]
 

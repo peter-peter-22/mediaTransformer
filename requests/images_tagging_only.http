@@ -1,33 +1,4 @@
-### Upload an image, test compression and tagging
-POST http://localhost:8003/upload_image/
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="options"
-
-{   
-    "bucket_name":"public",
-    "object_name":"test/name.webp",
-    "convert_to":"WEBP",
-    "mime_type":"image/jpeg",
-    "upload_mime_type":"image/webp",
-    "quality":80,
-    "limit_resolution":{"x":1920,"y":1080},
-    "tag":true,
-    "variants":[{
-        "object_name":"test/name-lite.webp",
-        "limit_resolution":{"x":1280,"y":720}
-    }]
-}
-
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="file"; filename="image.jpg"
-Content-Type: image/jpeg
-
-< ./pics/forest-hd.jpg
-------WebKitFormBoundary7MA4YWxkTrZu0gW--
-
-### Upload an image, test OCR
+### Cat
 POST http://localhost:8003/upload_image/
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
@@ -38,28 +9,6 @@ Content-Disposition: form-data; name="options"
     "bucket_name":"public",
     "object_name":"test/text.webp",
     "upload_mime_type":"image/webp",
-    "ocr":true
-}
-
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="file"; filename="image.jpg"
-Content-Type: image/jpeg
-
-< ./pics/text.jpg
-------WebKitFormBoundary7MA4YWxkTrZu0gW--
-
-### Upload an webp image, test OCR and tagging
-POST http://localhost:8003/upload_image/
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="options"
-
-{   
-    "bucket_name":"public",
-    "object_name":"test/text.webp",
-    "upload_mime_type":"image/webp",
-    "ocr":true,
     "tag":true
 }
 
@@ -67,10 +16,10 @@ Content-Disposition: form-data; name="options"
 Content-Disposition: form-data; name="file"; filename="image.webp"
 Content-Type: image/webp
 
-< ./pics/car-poster.webp
+< ./pics/cat.webp
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
-### Upload an low resolution image, test tagging
+### Dog
 POST http://localhost:8003/upload_image/
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
@@ -79,14 +28,56 @@ Content-Disposition: form-data; name="options"
 
 {   
     "bucket_name":"public",
-    "object_name":"test/text.jpg",
-    "upload_mime_type":"image/jpg",
+    "object_name":"test/text.webp",
+    "upload_mime_type":"image/webp",
     "tag":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="file"; filename="image.jpg"
-Content-Type: image/jpg
+Content-Disposition: form-data; name="file"; filename="image.webp"
+Content-Type: image/webp
 
-< ./pics/road-lowres.jpg
+< ./pics/dog.webp
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Cat and dog
+POST http://localhost:8003/upload_image/
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="options"
+
+{   
+    "bucket_name":"public",
+    "object_name":"test/text.webp",
+    "upload_mime_type":"image/webp",
+    "tag":true
+}
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="image.webp"
+Content-Type: image/webp
+
+< ./pics/cat-and-dog.webp
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Car
+POST http://localhost:8003/upload_image/
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="options"
+
+{   
+    "bucket_name":"public",
+    "object_name":"test/text.webp",
+    "upload_mime_type":"image/webp",
+    "tag":true
+}
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="image.webp"
+Content-Type: image/webp
+
+< ./pics/car.webp
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--

@@ -1,8 +1,8 @@
 from PIL import Image
 import torch
-from torchvision import models
 from typing import NamedTuple
 from src.common.device import device
+from transformers.models.vit import ViTImageProcessor, ViTForImageClassification
 
 # Type for the tags
 class Tag(NamedTuple):
@@ -15,40 +15,26 @@ class Tag(NamedTuple):
     category: str
     probability: float
 
-# Load the pre-trained ResNet50 model with IMAGENET1K_V2 weights
-model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2).to(device)
+# Get the model and the preprocessor
+processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
+model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
+model.to(device) # type: ignore
 model.eval()
 
-# Define the preprocessing pipeline
-preprocess = models.ResNet50_Weights.IMAGENET1K_V2.transforms()
-
-async def tag_image(image: Image.Image, top_k: int, min_confidence: float):
-    """
-    Predict the image's category using a pre-trained ResNet model.
-    Args:
-        image (PIL.Image): The input image
-    Returns:
-        dict: A dictionary containing the predicted category and its probability.
-    """
-
+def classify_image(image: Image.Image):
     # Preprocess the image
-    input_tensor = preprocess(image).unsqueeze(0).to(device)
+    inputs = processor(image,return_tensors="pt").to(device)
 
     # Perform inference
     with torch.no_grad():
-        outputs = model(input_tensor)
+        outputs = model(**inputs)
+        logits = outputs.logits
 
-    # Get top 5 predictions
-    probabilities = torch.nn.functional.softmax(outputs[0], dim=0)
-    top5_prob, top5_catid = torch.topk(probabilities, top_k)
+    # Make the label readable
+    predicted_class_idx = logits.argmax(-1).item()
+    label=model.config.id2label[predicted_class_idx]
+    print("Predicted class:", label)
 
-    # Map category IDs to labels
-    labels = models.ResNet50_Weights.IMAGENET1K_V2.meta["categories"]
-    top5_labels = [labels[catid] for catid in top5_catid]
-
-    # Format the results and filter out the too inconfident predictions
-    return [
-        Tag(label,round(prob.item(), 4))
-        for label, prob in zip(top5_labels, top5_prob)
-        if prob.item()>=min_confidence
-    ]
+    # Return the result
+    if(isinstance(label, str)):
+        return label

@@ -1,19 +1,19 @@
-from src.common.device import device
 from PIL import Image
 import numpy as np
-from typing import List
-from transformers.pipelines import pipeline
-from transformers.models.auto.processing_auto import AutoProcessor
-from transformers.models.blip import BlipForConditionalGeneration
+import easyocr
 
-processor = AutoProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+reader = easyocr.Reader(['en'], gpu=True)
 
-def test(image: Image.Image, text:str):
-    
-    inputs = processor(images=image, text=text, return_tensors="pt")
-
-    generated_ids = model.generate(**inputs)
-
-    generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-    print(generated_text)
+def extract_text(image: Image.Image, min_confidence:float):
+    # Preprocess image
+    image_np = np.array(image)
+    # Perform OCR
+    results = reader.readtext(image_np)
+    # Log results
+    for (bbox, text, prob) in results:
+        print(f"Detected text: '{text}' with confidence {prob:.2f}")
+    # Filter out low-confidence texts
+    filtered=[text for (bbox, text, prob) in results if float(prob)>=min_confidence]
+    # Join the filtered texts into a single string
+    final="\n".join(filtered)
+    return final

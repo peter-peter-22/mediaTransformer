@@ -28,7 +28,7 @@ class ImageOptions(BaseModel):
     description_start: str|None=None
     variants: List[ImageVariant]=[]
     ocr: bool=False
-    ocr_min_confidence: float=0.8
+    ocr_min_confidence: float=0.2
     
 
     

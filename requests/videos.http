@@ -1,5 +1,5 @@
 ### Upload a video, test compression and tagging
-POST http://localhost:8003/upload_video/
+POST http://localhost:8003/upload/video/
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -25,7 +25,7 @@ Content-Type: video/mp4
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ### Upload a long video, test compression and tagging
-POST http://localhost:8003/upload_video/
+POST http://localhost:8003/upload/video/
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -51,7 +51,7 @@ Content-Type: video/mp4
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ### Upload a long video in very small size, test compression and tagging
-POST http://localhost:8003/upload_video/
+POST http://localhost:8003/upload/video/
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -77,7 +77,7 @@ Content-Type: video/mp4
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ### Upload a webm video (fails)
-POST http://localhost:8003/upload_video/
+POST http://localhost:8003/upload/video/
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -103,7 +103,7 @@ Content-Type: video/webm
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ### Upload a gif video (fails)
-POST http://localhost:8003/upload_video/
+POST http://localhost:8003/upload/video/
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW

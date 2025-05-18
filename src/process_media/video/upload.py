@@ -1,21 +1,16 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Form
+from fastapi import UploadFile, HTTPException
 from src.common.response import UploadResponse, VariantUpload
-from pydantic import ValidationError
 import shutil
 import tempfile
-from src.common.format_pydantic_error import handle_pydantic_error
 import ffmpeg
-from src.options.video_options import VideoOptions
+from src.process_media.video.video_options import VideoOptions
 from src.tagging.tag_video import describe_video
 import os
 from pathlib import Path
 import asyncio
 from src.minio.client import minio_client
 
-router = APIRouter()
-
-@router.post("/")
-async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
+async def upload_video(file: UploadFile, options:str):
     # Define the file paths to access them later
     upload_path=None
     output_path=None
@@ -44,6 +39,12 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
             print("Mime Type: ",mime_type)
             if mime_type is None:
                 raise HTTPException(status_code=422, detail="Mime type is required")
+            
+            # Validate the mimetype when necessary
+            if c.mime_type:
+                if c.mime_type != mime_type:
+                    raise HTTPException(status_code=422, detail=f"Mime type mismatch. Expected {c.mime_type}, got {mime_type}")
+
 
             # Get the file size
             size=file.size
@@ -117,13 +118,7 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
     # Handle errors
     except ffmpeg.Error as e:
         print(f"ffmpeg error: {e}")
-        raise HTTPException(status_code=500, detail="Error processing video")
-    except ValidationError as e:
-        handle_pydantic_error(e)
-    except Exception as e:
-        # Handle other exceptions
-        print(e)
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail="Error processing video")
     
     # Remove the temporary files
     finally:

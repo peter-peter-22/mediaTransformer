@@ -1,6 +1,6 @@
 from pydantic import BaseModel,ConfigDict
 from typing import Literal, List
-from src.options.common import Vector2Int
+from src.process_media.common import Vector2Int
 
 type ImageFormat=Literal["WEBP","JPEG"]
 

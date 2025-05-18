@@ -24,11 +24,9 @@ class ImageOptions(BaseModel):
     quality: int|None=None
     limit_resolution: Vector2Int|None=None
     max_size: int|None=None
-    describe:bool=False
-    description_start: str|None=None
+    prompt:str|None=None
+    prompt_max_tokens: int=32
     variants: List[ImageVariant]=[]
-    ocr: bool=False
-    ocr_min_confidence: float=0.2
     
 
     

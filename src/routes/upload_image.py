@@ -8,7 +8,7 @@ from src.tagging.tag_image import describe_image
 from src.common.response import ImageUploadResponse, VariantUpload
 import asyncio
 from src.common.format_pydantic_error import handle_pydantic_error
-from src.ocr.find_text import extract_text
+#from src.ocr.find_text import extract_text
 
 router = APIRouter()
 
@@ -51,13 +51,13 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
             image = image.convert("RGB")
 
         # Read text if necessary
-        text=extract_text(image,parsed_options.ocr_min_confidence) if parsed_options.ocr else None
+        #text=extract_text(image,parsed_options.ocr_min_confidence) if parsed_options.ocr else None
 
         # Tag image if necessary
         label=None
-        if parsed_options.describe:
-            label=describe_image(image,parsed_options.description_start)
-        
+        if parsed_options.prompt:
+            label=describe_image(image,parsed_options.prompt,parsed_options.prompt_max_tokens)
+        return
         # Create a variant for the default entry
         parsed_options.variants.insert(
             0,
@@ -75,7 +75,7 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
         # Return results
         return ImageUploadResponse.model_construct(
             label=label,
-            text=text,
+            #text=text,
             files=responses
         )
 

@@ -83,10 +83,11 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
 
                 # Tag if necessary
                 tags:List[str]=[]
-                if c.tag:
-                    tags=tag_video(output_path,c.tagging_top_k,c.tagging_min_confidence)
+                #test=tag_video(output_path)
+                    
 
                 # Upload
+                return
                 file_size = os.path.getsize(output_path)
                 with open(output_path, 'rb') as data_to_upload:
                     await asyncio.to_thread(

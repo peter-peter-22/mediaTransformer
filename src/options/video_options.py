@@ -11,7 +11,6 @@ class FfmpegSettings(BaseModel):
     vcodec:str|None=None
     acodec:str|None=None
 
-
 class VideoOptions(BaseModel):
     model_config = ConfigDict(strict=True)
 
@@ -23,9 +22,10 @@ class VideoOptions(BaseModel):
     bitrate: str|None=None
     limit_resolution: Vector2Int|None=None
     max_size: int|None=None
-    tag:bool=False
-    tagging_min_confidence:float=0.7
-    tagging_top_k:int=5    
     ffmpeg_settings:FfmpegSettings|None=None
+    describe:bool=False
+    prompt:str="briefly describe the video, be short and to the point"
+    prompt_max_tokens: int=64
+    skip_upload: bool=False
 
     

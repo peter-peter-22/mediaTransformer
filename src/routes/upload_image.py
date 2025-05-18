@@ -55,9 +55,13 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
 
         # Tag image if necessary
         label=None
-        if parsed_options.prompt:
+        if parsed_options.describe:
             label=describe_image(image,parsed_options.prompt,parsed_options.prompt_max_tokens)
-        return
+
+        # Skip the upload if necessary
+        if parsed_options.skip_upload:
+            return ImageUploadResponse([],label=label,text="")
+    
         # Create a variant for the default entry
         parsed_options.variants.insert(
             0,

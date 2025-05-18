@@ -1,22 +1,26 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException, Form
-from src.common.response import VideoUploadResponse
+from src.common.response import VideoUploadResponse, VariantUpload
 from pydantic import ValidationError
 import shutil
 import tempfile
 from src.common.format_pydantic_error import handle_pydantic_error
 import ffmpeg
 from src.options.video_options import VideoOptions
-from src.tagging.tag_video import tag_video
+from src.tagging.tag_video import describe_video
 import os
 from pathlib import Path
-from typing import List
 import asyncio
 from src.minio.client import minio_client
+import time
 
 router = APIRouter()
 
 @router.post("/")
 async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
+    # Define the file paths to access them later
+    upload_path=None
+    output_path=None
+
     try:
         # Get and validate the options
         c=VideoOptions.model_validate_json(options)
@@ -27,12 +31,12 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
             raise HTTPException(status_code=422, detail="File name is required")
         ext = Path(file.filename).suffix
         print("Extension: ",ext)
-
+        
         # Create a temporary path for the uploaded video
-        upload=tempfile.NamedTemporaryFile(delete=False,suffix=ext)
-        upload_path = upload.name 
-        print("Upload Path: ",upload_path)
-        try:
+        with tempfile.NamedTemporaryFile(delete=False,suffix=ext) as upload:
+            upload_path = upload.name 
+            print("Upload Path: ",upload_path)
+
             # Place the video to a temp path
             shutil.copyfileobj(file.file, upload)
 
@@ -50,10 +54,10 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
             
             # Create a temporary path for the transformed video
             output_ext=c.convertTo or ext
-            output=tempfile.NamedTemporaryFile(delete=False,suffix=output_ext)
-            output_path=output.name
-            print("Output Path: ",output_path)
-            try:
+            with tempfile.NamedTemporaryFile(delete=False,suffix=output_ext) as output:
+                output_path=output.name
+                print("Output Path: ",output_path)
+            
                 # Define mpeg settings
                 fm_config={
                     "vf":c.ffmpeg_settings and c.ffmpeg_settings.vf or \
@@ -82,12 +86,13 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
                 )
 
                 # Tag if necessary
-                tags:List[str]=[]
-                #test=tag_video(output_path)
-                    
+                label=describe_video(output_path,c.prompt,c.prompt_max_tokens)
+                
+                # Skip upload when necessary
+                if(c.skip_upload):
+                    return VideoUploadResponse([],label=label)
 
                 # Upload
-                return
                 file_size = os.path.getsize(output_path)
                 with open(output_path, 'rb') as data_to_upload:
                     await asyncio.to_thread(
@@ -101,28 +106,16 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
                     )
 
                 # Return the response
-                return VideoUploadResponse.model_construct(
-                    object_name=c.object_name,
-                    bucket_name=c.bucket_name, 
-                    mime_type=c.upload_mime_type,
-                    tags=tags
+                return VideoUploadResponse(
+                    files=[VariantUpload(                        
+                        object_name=c.object_name,
+                        bucket_name=c.bucket_name, 
+                        mime_type=c.upload_mime_type,
+                    )],
+                    label=label
                 )
 
-            except Exception as e:
-                print(e)
-                raise e
-            finally:
-                # Remove the transformed file
-                output.close()
-                os.remove(output_path)
-        except Exception as e:
-            print(e)
-            raise e
-        finally:
-            # Remove the original file
-            upload.close()
-            os.remove(upload_path)
-
+    # Handle errors
     except ffmpeg.Error as e:
         print(f"ffmpeg error: {e}")
         raise HTTPException(status_code=500, detail="Error processing video")
@@ -132,3 +125,11 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
         # Handle other exceptions
         print(e)
         raise HTTPException(status_code=400, detail=str(e))
+    
+    # Remove the temporary files
+    finally:
+        try:
+            if output_path: os.remove(output_path)
+            if upload_path: os.remove(upload_path)
+        except PermissionError as e:
+            print("Warning: Failed to remove temporary file.", e)

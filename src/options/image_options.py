@@ -24,9 +24,11 @@ class ImageOptions(BaseModel):
     quality: int|None=None
     limit_resolution: Vector2Int|None=None
     max_size: int|None=None
-    prompt:str|None=None
+    describe: bool=False
+    prompt:str="briefly describe the image, be short and to the point"
     prompt_max_tokens: int=32
     variants: List[ImageVariant]=[]
+    skip_upload: bool=False
     
 
     

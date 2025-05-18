@@ -6,11 +6,11 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0g
 Content-Disposition: form-data; name="options"
 
 {   
+    "skip_upload":true,
     "bucket_name":"public",
     "object_name":"test/text.webp",
     "upload_mime_type":"image/webp",
-    "prompt":"briefly describe the image",
-    "prompt_max_tokens":50
+    "describe":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -28,11 +28,11 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0g
 Content-Disposition: form-data; name="options"
 
 {   
+    "skip_upload":true,
     "bucket_name":"public",
     "object_name":"test/text.webp",
     "upload_mime_type":"image/webp",
-    "prompt":"briefly describe the image",
-    "prompt_max_tokens":50
+    "describe":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -50,11 +50,11 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0g
 Content-Disposition: form-data; name="options"
 
 {   
+    "skip_upload":true,
     "bucket_name":"public",
     "object_name":"test/text.webp",
     "upload_mime_type":"image/webp",
-    "prompt":"briefly describe the image",
-    "prompt_max_tokens":50
+    "describe":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -72,11 +72,11 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0g
 Content-Disposition: form-data; name="options"
 
 {   
+    "skip_upload":true,
     "bucket_name":"public",
     "object_name":"test/text.webp",
     "upload_mime_type":"image/webp",
-    "prompt":"briefly describe this image",
-    "prompt_max_tokens":30
+    "describe":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW

@@ -13,7 +13,8 @@ Content-Disposition: form-data; name="options"
     "upload_mime_type":"video/mp4",
     "bitrate":"1000k",
     "limit_resolution":{"x":1920,"y":1080},
-    "tag":true
+    "describe":true,
+    "skip_upload":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -38,7 +39,8 @@ Content-Disposition: form-data; name="options"
     "upload_mime_type":"video/mp4",
     "bitrate":"1000k",
     "limit_resolution":{"x":1920,"y":1080},
-    "tag":true
+    "describe":true,
+    "skip_upload":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -63,7 +65,8 @@ Content-Disposition: form-data; name="options"
     "upload_mime_type":"video/mp4",
     "bitrate":"1000k",
     "limit_resolution":{"x":100,"y":100},
-    "tag":true
+    "describe":true,
+    "skip_upload":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -88,7 +91,8 @@ Content-Disposition: form-data; name="options"
     "upload_mime_type":"video/webm",
     "bitrate":"1000k",
     "limit_resolution":{"x":1920,"y":1080},
-    "tag":true
+    "describe":true,
+    "skip_upload":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -113,7 +117,8 @@ Content-Disposition: form-data; name="options"
     "upload_mime_type":"video/gif",
     "bitrate":"1000k",
     "limit_resolution":{"x":1920,"y":1080},
-    "tag":true
+    "describe":true,
+    "skip_upload":true
 }
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW

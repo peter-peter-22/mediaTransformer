@@ -9,12 +9,6 @@ class VariantUpload:
     mime_type:str
 
 @dataclass
-class ImageUploadResponse:
-    files:List[VariantUpload]
-    label:str|None=None
-    text: str|None=None
-
-@dataclass
-class VideoUploadResponse:
+class UploadResponse:
     files:List[VariantUpload]
     label:str|None=None

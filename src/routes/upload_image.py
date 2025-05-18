@@ -5,7 +5,7 @@ import io
 from pydantic import ValidationError
 from src.options.image_options import ImageOptions, ImageVariant
 from src.tagging.tag_image import describe_image
-from src.common.response import ImageUploadResponse, VariantUpload
+from src.common.response import UploadResponse, VariantUpload
 import asyncio
 from src.common.format_pydantic_error import handle_pydantic_error
 #from src.ocr.find_text import extract_text
@@ -50,9 +50,6 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
         if image.mode != "RGB":
             image = image.convert("RGB")
 
-        # Read text if necessary
-        #text=extract_text(image,parsed_options.ocr_min_confidence) if parsed_options.ocr else None
-
         # Tag image if necessary
         label=None
         if parsed_options.describe:
@@ -60,7 +57,7 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
 
         # Skip the upload if necessary
         if parsed_options.skip_upload:
-            return ImageUploadResponse([],label=label,text="")
+            return UploadResponse([],label=label)
     
         # Create a variant for the default entry
         parsed_options.variants.insert(
@@ -77,9 +74,8 @@ async def upload_image(file: UploadFile = File(...), options:str=Form(...)):
         ])
 
         # Return results
-        return ImageUploadResponse.model_construct(
+        return UploadResponse.model_construct(
             label=label,
-            #text=text,
             files=responses
         )
 

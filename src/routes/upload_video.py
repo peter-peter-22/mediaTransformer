@@ -1,5 +1,5 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException, Form
-from src.common.response import VideoUploadResponse, VariantUpload
+from src.common.response import UploadResponse, VariantUpload
 from pydantic import ValidationError
 import shutil
 import tempfile
@@ -11,7 +11,6 @@ import os
 from pathlib import Path
 import asyncio
 from src.minio.client import minio_client
-import time
 
 router = APIRouter()
 
@@ -90,7 +89,7 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
                 
                 # Skip upload when necessary
                 if(c.skip_upload):
-                    return VideoUploadResponse([],label=label)
+                    return UploadResponse([],label=label)
 
                 # Upload
                 file_size = os.path.getsize(output_path)
@@ -106,7 +105,7 @@ async def upload_video(file: UploadFile = File(...), options:str=Form(...)):
                     )
 
                 # Return the response
-                return VideoUploadResponse(
+                return UploadResponse(
                     files=[VariantUpload(                        
                         object_name=c.object_name,
                         bucket_name=c.bucket_name, 

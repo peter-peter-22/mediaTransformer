@@ -10,7 +10,6 @@ class ImageVariant(BaseModel):
     convert_to: ImageFormat|None=None
     quality: int|None=None
     limit_resolution: Vector2Int|None=None
-    max_size: int|None=None
     upload_mime_type:str|None=None
 
 class ImageOptions(BaseModel):
@@ -20,7 +19,7 @@ class ImageOptions(BaseModel):
     object_name: str
     mime_type: str|None=None
     upload_mime_type:str
-    convertTo: ImageFormat|None=None
+    convert_to: ImageFormat|None=None
     quality: int|None=None
     limit_resolution: Vector2Int|None=None
     max_size: int|None=None
@@ -29,6 +28,4 @@ class ImageOptions(BaseModel):
     prompt_max_tokens: int=32
     variants: List[ImageVariant]=[]
     skip_upload: bool=False
-    
-
     

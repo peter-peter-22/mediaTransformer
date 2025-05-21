@@ -18,7 +18,7 @@ class VideoOptions(BaseModel):
     object_name: str
     mime_type: str|None=None
     upload_mime_type:str
-    convertTo: VideoFormat|None=None
+    convert_to: VideoFormat|None=None
     bitrate: str|None=None
     limit_resolution: Vector2Int|None=None
     max_size: int|None=None

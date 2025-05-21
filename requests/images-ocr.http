@@ -1,6 +1,7 @@
 ### Singleline
-POST http://localhost:8003/upload/image/
+POST http://localhost:8003/upload/image
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+secret-key: 123
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="options"
@@ -22,8 +23,9 @@ Content-Type: image/jpeg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ### Multiline
-POST http://localhost:8003/upload/image/
+POST http://localhost:8003/upload/image
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+secret-key: 123
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="options"
@@ -45,8 +47,9 @@ Content-Type: image/jpeg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ### Background, multiline
-POST http://localhost:8003/upload/image/
+POST http://localhost:8003/upload/image
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+secret-key: 123
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="options"

@@ -53,7 +53,7 @@ async def upload_video(file: UploadFile, options:str):
                 raise HTTPException(status_code=422, detail="File size is required")
             
             # Create a temporary path for the transformed video
-            output_ext=c.convertTo or ext
+            output_ext=c.convert_to or ext
             with tempfile.NamedTemporaryFile(delete=False,suffix=output_ext) as output:
                 output_path=output.name
                 print("Output Path: ",output_path)
@@ -67,7 +67,7 @@ async def upload_video(file: UploadFile, options:str):
                         'libx264',
                     "acodec":c.ffmpeg_settings and c.ffmpeg_settings.acodec or \
                         'aac',
-                    "format":c.convertTo,
+                    "format":c.convert_to,
                     "bitrate":c.bitrate,
                     "loglevel":"quiet"
                 }

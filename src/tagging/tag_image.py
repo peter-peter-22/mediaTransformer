@@ -4,7 +4,7 @@ from src.tagging.model import model,processor
 from src.tagging.clean_text import clean_text
 
 def describe_image(image:Image.Image,prompt_text:str,max_tokens:int):
-    print("Describing image...")
+    print("Describing image...",flush=True)
 
     # Construct prompt
     messages = [
@@ -45,7 +45,7 @@ def describe_image(image:Image.Image,prompt_text:str,max_tokens:int):
     
     
     # Clean text
-    print("Full text: ",generated_text)
+    print("Full text: ",generated_text,flush=True)
     generated_text = clean_text(generated_text)
     print("Description: ",generated_text)
 

@@ -3,7 +3,7 @@ from src.tagging.model import model,processor
 from src.tagging.clean_text import clean_text
 
 def describe_video(video_path:str,prompt_text:str,max_tokens:int):
-    print("Describing video...")
+    print("Describing video...",flush=True)
 
     # Construct prompt
     messages = [
@@ -39,7 +39,7 @@ def describe_video(video_path:str,prompt_text:str,max_tokens:int):
     )[0])
     
     # Clean text
-    print("Full text: ",generated_text)
+    print("Full text: ",generated_text,flush=True)
     generated_text = clean_text(generated_text)
     print("Description: ",generated_text)
 

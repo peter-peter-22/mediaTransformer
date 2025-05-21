@@ -1,8 +1,9 @@
 from minio import Minio
+from src.common.env import settings
 
 minio_client:Minio = Minio(
-    "localhost:9000",
-    access_key="minioadmin",
-    secret_key="minioadmin",
-    secure=False
+    settings.minio_url,
+    access_key=settings.minio_root_user,
+    secret_key=settings.minio_root_password,
+    secure=settings.minio_secure
 )

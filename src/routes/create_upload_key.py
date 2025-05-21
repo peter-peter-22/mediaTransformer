@@ -29,7 +29,7 @@ class VideoUploadKey(BaseModel):
     options:VideoOptions
 
 @router.post("/video", dependencies=[Depends(verify_secret_key)])
-async def create_video_upload_key(body:ImageUploadKey):
+async def create_video_upload_key(body:VideoUploadKey):
     print("Creating video upload key for:",body)
     # Create upload key in redis with expiration time
     await r.setex(

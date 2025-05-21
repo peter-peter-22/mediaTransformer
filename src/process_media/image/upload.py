@@ -82,7 +82,7 @@ async def upload_variant(parsed_options: ImageOptions,variant:ImageVariant, imag
     """
 
     # Overwrite default parameters with the variant's values
-    convert_to = variant.convert_to or parsed_options.convertTo
+    convert_to = variant.convert_to or parsed_options.convert_to
     limit_resolution = variant.limit_resolution or parsed_options.limit_resolution
     upload_mime_type = variant.upload_mime_type or parsed_options.upload_mime_type
     quality = variant.quality or parsed_options.quality

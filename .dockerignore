@@ -12,3 +12,6 @@ __pycache__
 docker-compose*.yml
 Dockerfile*
 .dockerignore
+
+# FFmpeg windows and other windows files
+.exe

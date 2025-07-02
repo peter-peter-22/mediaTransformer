@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import asyncio
 from src.minio.client import minio_client
+from src.ffmpeg.get_ffmpeg_path import ffmpeg_path
 
 async def upload_video(file: UploadFile, options:str):
     # Define the file paths to access them later
@@ -82,7 +83,7 @@ async def upload_video(file: UploadFile, options:str):
                         **{k: v for k, v in fm_config.items() if v is not None} # Remove None args to avoid errors
                     )
                     .overwrite_output()
-                    .run(cmd="D:/ffmpeg/ffmpeg-2025-05-15-git-12b853530a-essentials_build/bin/ffmpeg.exe")
+                    .run(cmd=ffmpeg_path)
                 )
 
                 # Tag if necessary

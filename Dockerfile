@@ -22,7 +22,7 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-# Copy requirements from build stage
+# Copy requirements and ffmpeg from build stage
 COPY --from=builder /app/requirements.txt . 
 
 # Install with pip with cache

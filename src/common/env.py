@@ -14,5 +14,7 @@ class Settings(BaseSettings):
     minio_root_user:str
     minio_root_password:str
     minio_secure:bool
+    # ffmpeg
+    ffmpeg_name:str
 
 settings = Settings() # type: ignore

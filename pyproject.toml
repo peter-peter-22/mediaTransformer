@@ -24,9 +24,6 @@ dependencies = [
     "redis (>=6.1.0,<7.0.0)",
 ]
 
-[tool.poetry.scripts]
-dev = "src.start_dev:main"
-
 [[tool.poetry.source]]
 name = "pytorch"
 url = "https://download.pytorch.org/whl/cu126"

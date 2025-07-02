@@ -1,5 +1,5 @@
 from fastapi import UploadFile, HTTPException
-from src.common.response import UploadResponse, VariantUpload
+from src.common.response import UploadResponse
 import shutil
 import tempfile
 import ffmpeg
@@ -86,32 +86,29 @@ async def upload_video(file: UploadFile, options:str):
                 )
 
                 # Tag if necessary
-                label=describe_video(output_path,c.prompt,c.prompt_max_tokens)
+                label= describe_video(output_path,c.prompt,c.prompt_max_tokens) if c.describe else None
                 
                 # Skip upload when necessary
-                if(c.skip_upload):
-                    return UploadResponse([],label=label)
+                if not c.skip_upload:
 
-                # Upload
-                file_size = os.path.getsize(output_path)
-                with open(output_path, 'rb') as data_to_upload:
-                    await asyncio.to_thread(
-                        lambda: minio_client.put_object(
-                            c.bucket_name,
-                            c.object_name,
-                            data=data_to_upload,
-                            length=file_size,
-                            content_type=c.upload_mime_type
+                    # Upload
+                    file_size = os.path.getsize(output_path)
+                    with open(output_path, 'rb') as data_to_upload:
+                        await asyncio.to_thread(
+                            lambda: minio_client.put_object(
+                                c.bucket_name,
+                                c.object_name,
+                                data=data_to_upload,
+                                length=file_size,
+                                content_type=c.upload_mime_type
+                            )
                         )
-                    )
 
                 # Return the response
                 return UploadResponse(
-                    files=[VariantUpload(                        
-                        object_name=c.object_name,
-                        bucket_name=c.bucket_name, 
-                        mime_type=c.upload_mime_type,
-                    )],
+                    object_name=c.object_name,
+                    bucket_name=c.bucket_name, 
+                    mime_type=c.upload_mime_type,
                     label=label
                 )
 

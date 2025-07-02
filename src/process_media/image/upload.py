@@ -2,9 +2,9 @@ from fastapi import UploadFile, HTTPException
 from src.minio.client import minio_client
 from PIL import Image
 import io
-from src.process_media.image.image_options import ImageOptions, ImageVariant
+from src.process_media.image.image_options import ImageOptions
 from src.tagging.tag_image import describe_image
-from src.common.response import UploadResponse, VariantUpload
+from src.common.response import UploadResponse
 import asyncio
 
 async def upload_image(file: UploadFile, options:str):
@@ -48,73 +48,37 @@ async def upload_image(file: UploadFile, options:str):
     if parsed_options.describe:
         label=describe_image(image,parsed_options.prompt,parsed_options.prompt_max_tokens)
 
-    # Skip the upload if necessary
-    if parsed_options.skip_upload:
-        return UploadResponse([],label=label)
-    
-    # Create a variant for the default entry
-    parsed_options.variants.insert(
-        0,
-        ImageVariant.model_construct(
-            object_name=parsed_options.object_name,
-        )
-    )
+    # Limit max resolution if necessary
+    if parsed_options.limit_resolution:
+        image.thumbnail((parsed_options.limit_resolution.x,parsed_options.limit_resolution.y))
 
-    # Process the variants
-    responses=await asyncio.gather(*[
-         upload_variant(parsed_options, variant, image)
-         for variant in parsed_options.variants
-    ])
+    # Skip the upload if necessary
+    if not parsed_options.skip_upload:
+
+        # Convert, compress and save
+        buffer = io.BytesIO()
+        image.save(
+            buffer, 
+            format=parsed_options.convert_to or image.format, 
+            quality=parsed_options.quality or 100
+        )
+        buffer.seek(0)
+    
+        # Upload
+        await asyncio.to_thread(
+            lambda: minio_client.put_object(
+                bucket_name=parsed_options.bucket_name,
+                object_name= parsed_options.object_name,
+                data=buffer,
+                length=buffer.getbuffer().nbytes,
+                content_type=parsed_options.upload_mime_type
+            )
+        )
 
     # Return results
-    return UploadResponse.model_construct(
-        label=label,
-        files=responses
-    )
-
-async def upload_variant(parsed_options: ImageOptions,variant:ImageVariant, image: Image.Image):
-    """
-    Overwrite the default parameters with the variant then upload.
-    Args:
-        parsedOptions (ImageOptions): The options to use for the upload.
-        variant (ImageVariant): The variant of the image to upload.
-        image (Image.Image): The image to upload.
-    """
-
-    # Overwrite default parameters with the variant's values
-    convert_to = variant.convert_to or parsed_options.convert_to
-    limit_resolution = variant.limit_resolution or parsed_options.limit_resolution
-    upload_mime_type = variant.upload_mime_type or parsed_options.upload_mime_type
-    quality = variant.quality or parsed_options.quality
-    bucket_name = variant.bucket_name or parsed_options.bucket_name 
-
-    # Limit max resolution if necessary
-    if limit_resolution:
-        image.thumbnail((limit_resolution.x,limit_resolution.y))
-
-    # Convert, compress and save
-    buffer = io.BytesIO()
-    image.save(
-        buffer, 
-        format=convert_to or image.format, 
-        quality=quality or 100
-    )
-    buffer.seek(0)
-    
-    # Upload
-    await asyncio.to_thread(
-        lambda: minio_client.put_object(
-            bucket_name,
-            variant.object_name,
-            data=buffer,
-            length=buffer.getbuffer().nbytes,
-            content_type=upload_mime_type
-        )
-    )
-
-    # Return file metadata
-    return VariantUpload.model_construct(
-        object_name=variant.object_name,
-        bucket_name=bucket_name, 
-        mime_type=upload_mime_type
+    return UploadResponse(
+        bucket_name=parsed_options.bucket_name,
+        object_name=parsed_options.object_name,
+        mime_type=parsed_options.upload_mime_type,
+        label=label
     )

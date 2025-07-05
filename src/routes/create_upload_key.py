@@ -4,6 +4,7 @@ from src.process_media.image.image_options import ImageOptions
 from src.process_media.video.video_options import VideoOptions
 from src.common.admin import verify_secret_key
 from src.common.redis import r
+from src.common.upload_keys import get_upload_key_redis
 
 router = APIRouter()
 
@@ -17,7 +18,7 @@ async def create_image_upload_key(body:ImageUploadKey):
     print("Creating image upload key for:",body)
     # Create upload key in redis with expiration time
     await r.setex(
-        body.key,
+        get_upload_key_redis(body.key),
         body.expiration,
         body.options.model_dump_json()
     )
@@ -33,7 +34,7 @@ async def create_video_upload_key(body:VideoUploadKey):
     print("Creating video upload key for:",body)
     # Create upload key in redis with expiration time
     await r.setex(
-        body.key,
+        get_upload_key_redis(body.key),
         body.expiration,
         body.options.model_dump_json()
     )

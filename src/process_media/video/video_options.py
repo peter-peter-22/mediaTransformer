@@ -1,6 +1,6 @@
 from pydantic import BaseModel,ConfigDict
 from typing import Literal
-from src.process_media.common import Vector2Int
+from src.process_media.common import Vector2IntSchema
 
 type VideoFormat=Literal["mp4","webm"]
 
@@ -20,7 +20,7 @@ class VideoOptions(BaseModel):
     upload_mime_type:str
     convert_to: VideoFormat|None=None
     bitrate: str|None=None
-    limit_resolution: Vector2Int|None=None
+    limit_resolution: Vector2IntSchema|None=None
     max_size: int|None=None
     ffmpeg_settings:FfmpegSettings|None=None
     describe:bool=False

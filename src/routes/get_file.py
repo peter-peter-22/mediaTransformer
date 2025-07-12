@@ -60,6 +60,7 @@ def full(bucket:str, path:str, file_size: int):
         headers={
             "Content-Disposition": f"inline; filename={path}",
             "Content-Length": str(file_size),
+            "Cache-Control": "public, max-age=31536000, immutable"
         }
     )
 
@@ -85,6 +86,7 @@ def video_stream(range_header:str, bucket:str, path:str, file_size:int):
                 "Content-Range": f"bytes {start}-{end}/{file_size}",
                 "Accept-Ranges": "bytes",
                 "Content-Length": str(end - start + 1),
+                "Cache-Control": "public, max-age=31536000, immutable"
             },
             status_code=206
         )

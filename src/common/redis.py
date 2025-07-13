@@ -7,7 +7,8 @@ def get_redis():
             host=settings.redis_host,
             port=settings.redis_port,
             password=settings.redis_password,
-            decode_responses=True
+            decode_responses=True,
+            db=2
         )
         r.ping()
         print('Connected to redis!')
